@@ -39,18 +39,15 @@
 
     <template #action-row="{ selectDate, closePicker }">
       <div class="action-row">
-        <button
-          class="btn btn-line color-gray btn-medium"
-          @click="handleClose(closePicker, 'close')"
-        >
-          close
+        <button class="btn btn--red" @click="handleClose(closePicker, 'close')">
+          Close
         </button>
         <button
           :style="{ marginLeft: '10px' }"
-          class="btn btn-line color-gray btn-medium"
+          class="btn btn--green"
           @click="handleClose(selectDate, 'choice')"
         >
-          choice
+          Choice
         </button>
       </div>
     </template>
@@ -244,3 +241,18 @@ const handleClose = async (fn) => {
   }
 };
 </script>
+
+<style lang="scss">
+.btn {
+  font-weight: 500;
+  &--red {
+    color: rgb(218, 60, 60);
+  }
+  &--green {
+    color: rgb(9, 77, 9);
+  }
+  &:hover {
+    opacity: 0.8;
+  }
+}
+</style>
