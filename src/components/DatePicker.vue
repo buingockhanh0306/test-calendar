@@ -31,10 +31,15 @@
         :id="props.id"
         :name="props.name"
         :rules="arrInputRules"
-        :hide-details="(!isCustomClose && props.isRules) || isOpenDp"
+        :hide-details="auto"
       >
         <template #message>
-          <div style="color: red; font-size: 0.9rem">Please enter a date</div>
+          <div
+            v-show="isCustomClose && props.isRules && !isOpenDp"
+            style="color: red; font-size: 0.9rem"
+          >
+            Please enter a date
+          </div>
         </template>
       </v-text-field>
     </template>
