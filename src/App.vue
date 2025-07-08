@@ -1,29 +1,33 @@
 <template>
-  <div class="center-wrapper">
-    <MyDatePicker
-      v-model="selectedDate"
-      id="my-datepicker"
-      name="my-datepicker-name"
-      label="Chọn ngày"
-      :show-label="true"
-      placeholder="YYYY-MM-DD"
-      date-picker-class="custom-input"
-      date-gubun="-"
-      :is-rules="true"
-    />
-  </div>
+  <v-form
+    ref="formRef"
+    class="form-data partition item-fixed"
+    validate-on="lazy invalid-input"
+  >
+    <div style="max-width: 400px; margin: 20px auto">
+      <CustomDatePicker
+        :id="'startDt'"
+        v-model="inputForm.startDt"
+        isRules
+        :label="'label.startDate'"
+        :key="inputForm.startDt"
+      />
+    </div>
+  </v-form>
 </template>
 
 <script setup>
 import { ref } from "vue";
-import MyDatePicker from "./components/DatePicker.vue";
+import CustomDatePicker from "./components/DatePicker.vue";
 
-const selectedDate = ref("");
+const inputForm = ref({
+  startDt: "",
+});
 </script>
 
 <style>
 .center-wrapper {
-  margin: 50px auto;
+  margin: 0px auto;
   width: 400px;
 }
 .custom-input .v-field__input {

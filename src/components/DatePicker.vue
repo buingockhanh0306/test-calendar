@@ -17,19 +17,21 @@
     @blur="setIsCustomClose(true)"
     @focus="setIsCustomClose(false)"
     @date-update="setIsCustomClose(false)"
-    @closed="setIsCustomClose(true)"
+    @closed="setIsOpenDP(false)"
+    @open="setIsOpenDP(true)"
   >
     <template #dp-input="{ value }">
       <v-text-field
         ref="inputRef"
         v-model="inputDate"
+        :class="isOpenDp ? 'custom-border' : {}"
+        placeholder="YYYY-MM-DD"
+        :key="keyInput"
         :value="value"
         :id="props.id"
         :name="props.name"
-        :placeholder="props.placeholder"
         :rules="arrInputRules"
-        :hide-details="!isCustomClose && props.isRules"
-        @focus="setIsCustomClose(false)"
+        :hide-details="(!isCustomClose && props.isRules) || isOpenDp"
       >
         <template #message>
           <div style="color: red; font-size: 0.9rem">Please enter a date</div>
@@ -130,6 +132,15 @@ const inputDate = ref(null);
 const isCustomClose = ref(true);
 const isClickClose = ref(false);
 const inputRef = ref(null);
+const isOpenDp = ref(false);
+const keyInput = ref(0);
+
+const setIsOpenDP = (val) => {
+  isOpenDp.value = val;
+};
+const handleCloseDP = () => {
+  isOpenDp.value = false;
+};
 
 const dateFormat = ref(
   "yyyy" + props.dateGubun + "MM" + props.dateGubun + "dd"
@@ -235,14 +246,10 @@ const setIsCustomClose = (val) => {
 const handleClose = async (fn) => {
   fn();
   setIsCustomClose(true);
-  setRules(props.isRules && isCustomClose.value);
-  if (props.isRules && inputRef.value?.validate) {
-    inputRef.value.validate();
-  }
 };
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 .btn {
   font-weight: 500;
   &--red {
@@ -253,6 +260,29 @@ const handleClose = async (fn) => {
   }
   &:hover {
     opacity: 0.8;
+  }
+}
+:deep(.custom-border) {
+  .v-field__outline::before {
+    border-color: black !important;
+  }
+
+  .v-field--focused .v-field__outline::before {
+    border-color: black !important;
+  }
+
+  .v-field--error .v-field__outline::before {
+    border-color: black !important;
+  }
+
+  .v-field,
+  .v-field--error,
+  .v-field--focused {
+    --v-field-border-color: black !important;
+    --v-theme-error: black !important;
+  }
+  .v-messages__message {
+    color: black !important;
   }
 }
 </style>
