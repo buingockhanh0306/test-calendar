@@ -13,23 +13,23 @@
     position="left"
     :ui="{ menu: props.isDarkmode ? 'dp-darkmode' : '' }"
     :disabled="props.disabled"
-    @cleared="setIsCustomClose(true)"
-    @blur="setIsCustomClose(true)"
-    @focus="setIsCustomClose(false)"
-    @date-update="setIsCustomClose(false)"
-    @closed="setIsCustomClose(true)"
+    @closed="setIsOpenDP(false)"
+    @open="setIsOpenDP(true)"
+    @internal-model-change="handlePickDate"
   >
     <template #dp-input="{ value }">
       <v-text-field
         ref="inputRef"
         v-model="inputDate"
         :value="value"
+        :key="keyInput"
         :id="props.id"
         :name="props.name"
         :placeholder="props.placeholder"
         :rules="arrInputRules"
-        :hide-details="!isCustomClose && props.isRules"
-        @focus="setIsCustomClose(false)"
+        :hide-details="isOpenDP"
+        @blur.stop="console.log('blurInput')"
+        @focus="console.log('focusInput')"
       >
         <template #message>
           <div style="color: red; font-size: 0.9rem">Please enter a date</div>
@@ -127,9 +127,31 @@ const utils = inject("$utils");
 
 const pickerDate = ref(null);
 const inputDate = ref(null);
-const isCustomClose = ref(true);
 const isClickClose = ref(false);
 const inputRef = ref(null);
+const isOpenDP = ref(false);
+const keyInput = ref(0);
+
+const setIsOpenDP = (isOpen) => {
+  // inputRef.value.validate();
+  isOpenDP.value = isOpen;
+  if (isOpen) {
+    // inputDate.value = "123";
+  }
+
+  nextTick(() => {
+    if (!isOpen) {
+      setRules(isOpen);
+      const inputEl = document.getElementById(props.id);
+      if (inputEl) {
+        inputEl.focus();
+        inputEl.blur();
+      }
+    }
+  });
+};
+
+const handlePickDate = (date) => {};
 
 const dateFormat = ref(
   "yyyy" + props.dateGubun + "MM" + props.dateGubun + "dd"
@@ -138,7 +160,7 @@ const dateFormat = ref(
 const arrInputRules = reactive([]);
 
 onMounted(() => {
-  setRules(props.isRules && isCustomClose.value);
+  setRules(props.isRules);
   setInitDate(props.modelValue);
 });
 
@@ -150,7 +172,7 @@ watch(
 );
 
 watch(
-  () => props.isRules && isCustomClose.value,
+  () => props.isRules,
   (newValue) => {
     setRules(newValue);
   }
@@ -167,7 +189,7 @@ watch(
   () => props.label,
   (newValue) => {
     arrInputRules.splice(0, arrInputRules.length);
-    setRules(props.isRules && isCustomClose.value, newValue);
+    setRules(props.isRules, newValue);
   }
 );
 
@@ -195,12 +217,8 @@ const setInitDate = (date) => {
   }
 };
 
-const focusInput = () => {
-  isCustomClose.value = false;
-};
-
 const setRules = (isRules, newlabel) => {
-  if (isRules && isCustomClose.value) {
+  if (isRules) {
     let strLabel = "";
     let label = props?.label;
     if (newlabel) {
@@ -222,6 +240,7 @@ const setRules = (isRules, newlabel) => {
   } else {
     arrInputRules.splice(0, arrInputRules.length);
   }
+  keyInput.value += 1; // Force re-render of input field
 };
 
 const formatDate = (date) => {
@@ -229,16 +248,8 @@ const formatDate = (date) => {
   return format(date, dateFormat.value);
 };
 
-const setIsCustomClose = (val) => {
-  isCustomClose.value = val;
-};
 const handleClose = async (fn) => {
   fn();
-  setIsCustomClose(true);
-  setRules(props.isRules && isCustomClose.value);
-  if (props.isRules && inputRef.value?.validate) {
-    inputRef.value.validate();
-  }
 };
 </script>
 
